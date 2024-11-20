@@ -14,43 +14,49 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture(0)  # Создание экземпляра VideoCapture
 
     # подключаем класс для распазнования маш. номеров
-    pathProj = str(os.path.abspath(os.getcwd())).split('Reconing Car Number')[0] + 'Reconing Car Number' # путь до всех системных файлов
-    smartGuard = SmartGuard(pathProj + r'\system files\RecText\Tesseract-OCR\tesseract.exe', pathProj)
+    pathProj = str(os.path.abspath(os.getcwd())).split('Reconing Car Number')[
+        0] + 'Reconing Car Number'  # путь до всех системных файлов
+    smartGuard = SmartGuard(
+        pathProj + r'\system files\RecText\Tesseract-OCR\tesseract.exe', pathProj)
     app = QApplication(sys.argv)
     ex = MainWindow(smartGuard, pathProj)
     smartGuard.getMainWindow(ex)
     ex.show()
-      
-    chekBarrier = False                            # флаг для проверки, открыт ли шлагбаум 
-    timeExpectationToOpenBarrier = 15              # время, через которое закроется шлагбаум, в секундах
-    timeOpenBarrier = datetime.datetime.now()      # время, в которое был открыт шлагбаум
+
+    # флаг для проверки, открыт ли шлагбаум
+    chekBarrier = False
+    # время, через которое закроется шлагбаум, в секундах
+    timeExpectationToOpenBarrier = 15
+    # время, в которое был открыт шлагбаум
+    timeOpenBarrier = datetime.datetime.now()
     timeNow = datetime.datetime.now()              # текущее время
-    
+
     while True:                   # Запуск видеопотока
         _, frame = cap.read()     # Чтение кадра и получение его свойств
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)     # преобразование цветовой палитры
+        # преобразование цветовой палитры
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         ex.updateImage(frame)     # обнавляем картинку
 
         resultDetect, textDetect = smartGuard.detectNumber(frame, 3)
         timeNow = datetime.datetime.now()
-        
+
         if resultDetect and not ex.getStateBarrier():           # если мы получили результат, но шлагбаум закрыт
             smartGuard.numberDefined(textDetect)
 
         # ------------------------ обработчик шлагбаума ---------------------------------
         if ex.getStateBarrier() and not chekBarrier:   # если шлагбаум открыт и мы это пропустили
             chekBarrier = True
-            timeOpenBarrier = datetime.datetime.now()  # запускаем таймер 
+            timeOpenBarrier = datetime.datetime.now()  # запускаем таймер
             continue
-        
+
         if not ex.getStateBarrier() and chekBarrier:   # останавливаем слежку, если шлагбаум закрылся
             chekBarrier = False
-        
+
         if int(float(str(timeNow - timeOpenBarrier).split(':')[2])) > timeExpectationToOpenBarrier and chekBarrier:
-            ex.openOrCloseBarrier(False)        # закрываем, если прошлои времени больше n-секунд и мы заметили это
+            # закрываем, если прошлои времени больше n-секунд и мы заметили это
+            ex.openOrCloseBarrier(False)
             chekBarrier = False
-            
-            
+
         if cv2.waitKey(1) & 0xFF == ord('q'):  # Остановка видеопотока
             break
 

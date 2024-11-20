@@ -4,17 +4,20 @@ import cv2             # машиное зрение
 from pytesseract import pytesseract  # распазнвоание текста на картинке
 
 # -------------------- класс для распазнования автомобильного номера и работы с БД --------------------
+
+
 class SmartGuard:
     def __init__(self, pathPytesser: str, pathProject: str, countParkingSpaces=100) -> None:
         self.number_plate_cascade = cv2.CascadeClassifier(pathProject +
-            r'\system files\RecText\haarcascade_russian_plate_number.xml')  # подключение каскада
+                                                          r'\system files\RecText\haarcascade_russian_plate_number.xml')  # подключение каскада
 
         # подключение модкля распазнования автомобильного номера
         pytesseract.tesseract_cmd = pathPytesser
         self.replayNumber = []            # хранение предыдущих номеров
         # количество парковочных мест на этаже
         self.countParkingSpaces = countParkingSpaces
-        self.con = sqlite3.connect(pathProject + r'\system files\DataBase\carsBD.db')    # подключаем БД
+        self.con = sqlite3.connect(
+            pathProject + r'\system files\DataBase\carsBD.db')    # подключаем БД
         self.pathProject = pathProject
 
     # сохранение экзапилятора окна
@@ -154,8 +157,8 @@ class SmartGuard:
         SELECT * FROM carsInParking
         WHERE number = "{infoNumber[1]}";""")
         result = [i for i in result]
-        
-        if not result:                 # добавляем тк машина заежает  
+
+        if not result:                 # добавляем тк машина заежает
             _ = cur.execute(f"""
             INSERT INTO carsInParking
             VALUES ((SELECT Count(*) FROM carsInParking), '{infoNumber[1]}', '{infoNumber[2]}', '{datetime.datetime.now()}');""")
@@ -164,14 +167,16 @@ class SmartGuard:
             DELETE FROM carsInParking
             WHERE number = '{infoNumber[1]}';""")
         self.con.commit()
-        
+
         # достаем всех машин на парковке
         result = cur.execute(f""" 
             SELECT * FROM carsInParking;""")
 
-        self.mainWindow.openOrCloseBarrier(True)                      # вызываем открытие шлагбаума 
-        self.mainWindow.displayNumberInParking(result)                # обновляем данные в таблице машин на парковке
-    
+        # вызываем открытие шлагбаума
+        self.mainWindow.openOrCloseBarrier(True)
+        # обновляем данные в таблице машин на парковке
+        self.mainWindow.displayNumberInParking(result)
+
     # автоматический обработчки номера
     def automaticDetect(self, infNum: list) -> bool:
         if not infNum:
@@ -179,16 +184,16 @@ class SmartGuard:
         if infNum[0][5] == 1:
             return False
         return True
-    
+
     # Номер определился
     def numberDefined(self, number: str) -> None:
         informNumber = self.searchNumdInBD(number)
-        
+
         if self.mainWindow.automaticMode.isChecked():        # запущенна автоматическая проверка
             if self.automaticDetect(informNumber):
-                self.openBarrier(informNumber)    
+                self.openBarrier(informNumber)
             return
-        
+
         if self.mainWindow.displayDialogNumberInParking(informNumber, number):
             self.openBarrier(informNumber)
         return

@@ -9,14 +9,16 @@ from PyQt6.QtGui import QPixmap, QImage
 class WidgetAllNumber(QWidget):
     def __init__(self, result: tuple, pathProject: str) -> None:
         super().__init__()
-        uic.loadUi(pathProject + r'\visualization\ui\number_in_bd.ui', self)  # Загружаем дизайн
+        # Загружаем дизайн
+        uic.loadUi(pathProject + r'\visualization\ui\number_in_bd.ui', self)
 
         index = 0
         for all_elm in result:
             self.allNumbers.setRowCount(index + 1)
             self.allNumbers.setItem(index, 0, QTableWidgetItem(all_elm[1]))
             self.allNumbers.setItem(index, 1, QTableWidgetItem(all_elm[2]))
-            self.allNumbers.setItem(index, 2, QTableWidgetItem(str(all_elm[3])))
+            self.allNumbers.setItem(
+                index, 2, QTableWidgetItem(str(all_elm[3])))
             self.allNumbers.setItem(
                 index, 3, QTableWidgetItem(str(all_elm[4])))
             self.allNumbers.setItem(
@@ -30,10 +32,11 @@ class WidgetAllNumber(QWidget):
 class WidgetInfoNumber(QWidget):
     def __init__(self, smartGuard: object, pathProject: str) -> None:
         super().__init__()
-        uic.loadUi(pathProject + r'\visualization\ui\inform_number.ui', self)  # Загружаем дизайн
+        # Загружаем дизайн
+        uic.loadUi(pathProject + r'\visualization\ui\inform_number.ui', self)
         self.smartGuard = smartGuard
         self.infoNumber = ()  # информация о текущем номере
-        
+
         self.pathProject = pathProject
         self.deleteNumber.clicked.connect(self.deletNumber)
         self.saveNumber.clicked.connect(self.addNumber)
@@ -72,11 +75,11 @@ class WidgetInfoNumber(QWidget):
             if res == -1:            # свободных мест нет
                 return self.createErrorDialog('Свободных мест нет')
 
-            self.numberParkingSpaiceLable.setText(str(res))   
+            self.numberParkingSpaiceLable.setText(str(res))
         elif not self.numberParkingSpaiceLable.text().isdigit():         # поле не число
             return self.createErrorDialog(
                 'Значение поля "Номер парковочного места" должно быть число')
-            
+
         return False
 
     # удаление номера
@@ -175,39 +178,42 @@ class WidgetInfoNumber(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self, smartGuard: object, pathProject: str) -> None:
         super().__init__()
-        uic.loadUi(pathProject + r'\visualization\ui\main_window.ui', self)  # Загружаем дизайн
+        # Загружаем дизайн
+        uic.loadUi(pathProject + r'\visualization\ui\main_window.ui', self)
         self.smartGuard = smartGuard
         self.pathProject = pathProject
-        
+
         self.stateBarrier = False            # состояние шлагбаума
-        self.searchNumber.clicked.connect(self.displayWidget)          # задаем функции для кнопок
+        # задаем функции для кнопок
+        self.searchNumber.clicked.connect(self.displayWidget)
         self.openBarrier.clicked.connect(self.openOrCloseBarrier)
         self.closeBarrier.clicked.connect(self.openOrCloseBarrier)
         self.deletText.clicked.connect(self.deletAllText)
         self.saveText.clicked.connect(self.saveAllText)
-        
+
         self.synchronizationText()   # синхранизируем текст с заметками
-        pixmap = QPixmap(pathProject + r'\visualization\img\close_barrier.png')            # указываем начальное фото для барьера 
+        # указываем начальное фото для барьера
+        pixmap = QPixmap(pathProject + r'\visualization\img\close_barrier.png')
         self.barrierLable.setPixmap(pixmap)
-        
+
     # удаляем текст из заметок
     def deletAllText(self):
         with open(self.pathProject + r'\system files\TextEditor\text.txt', 'w', encoding='utf-8') as file:
             file.write('')
         self.editorTexting.setText('')
-    
+
     # сохраняем текст
     def saveAllText(self):
         with open(self.pathProject + r'\system files\TextEditor\text.txt', 'w', encoding='utf-8') as file:
             file.write(self.editorTexting.toPlainText())
-    
+
     # делаем синхронизацию с заметками
     def synchronizationText(self):
         with open(self.pathProject + r'\system files\TextEditor\text.txt', 'r', encoding='utf-8') as file:
             text = ''.join([line for line in file.readlines()])
-        
+
         self.editorTexting.setText(text)
-        
+
     # обновление картинки
     def updateImage(self, img) -> None:
         self.videoCature.setPixmap(self.convert_cv_qt(img))
@@ -218,7 +224,7 @@ class MainWindow(QMainWindow):
         bytesPerLine = 3 * width
         qImg = QImage(cvImg.data, width, height, bytesPerLine,
                       QImage.Format.Format_RGB888)
-        
+
         return QPixmap(qImg)
 
     # отображение виджета
@@ -229,28 +235,34 @@ class MainWindow(QMainWindow):
     # получение состояние шлагбаума
     def getStateBarrier(self) -> bool:
         return self.stateBarrier
-    
+
     # открытие шлагбаума
-    def openOrCloseBarrier(self, open=True) -> None:       # вызвать ф-ию от кнопки и от другой ф-ии
+    # вызвать ф-ию от кнопки и от другой ф-ии
+    def openOrCloseBarrier(self, open=True) -> None:
         button = self.sender()
         if button:                               # была нажата кнопка
             if button.text() == 'Открыть шлагбаум':
-                pixmap = QPixmap(self.pathProject + r'\visualization\img\open_barrier.png') # сохраняем открытый шлагбаум
+                # сохраняем открытый шлагбаум
+                pixmap = QPixmap(self.pathProject +
+                                 r'\visualization\img\open_barrier.png')
                 self.stateBarrier = True
             else:
-                pixmap = QPixmap(self.pathProject + r'\visualization\img\close_barrier.png')
+                pixmap = QPixmap(self.pathProject +
+                                 r'\visualization\img\close_barrier.png')
                 self.stateBarrier = False
-                
+
         if open and not button:      # была вызванна ф-ей
-            pixmap = QPixmap(self.pathProject + r'\visualization\img\open_barrier.png')
+            pixmap = QPixmap(self.pathProject +
+                             r'\visualization\img\open_barrier.png')
             self.stateBarrier = True
-            
+
         elif not button:
-            pixmap = QPixmap(self.pathProject + r'\visualization\img\close_barrier.png')
+            pixmap = QPixmap(self.pathProject +
+                             r'\visualization\img\close_barrier.png')
             self.stateBarrier = False
-    
+
         self.barrierLable.setPixmap(pixmap)
-    
+
     # отабрежение номеров на парковочных местах
     def displayNumberInParking(self, result: list):
         index = 0
@@ -260,7 +272,7 @@ class MainWindow(QMainWindow):
             self.carParking.setItem(index, 0, QTableWidgetItem(all_elm[1]))
             self.carParking.setItem(index, 1, QTableWidgetItem(all_elm[2]))
             self.carParking.setItem(index, 2, QTableWidgetItem(all_elm[3]))
-    
+
     # создание диалогового окна об ошибке с определением номера в бд
     def createDialogError(self, text: str) -> False:
         dlg = QMessageBox(self)
@@ -271,19 +283,20 @@ class MainWindow(QMainWindow):
         button = dlg.exec()
         if button == QMessageBox.StandardButton.Ok:    # возращаем ошибку в виде диалогово окна
             return False
-    
-    
+
     # создание диалогового окна, впускать ли номер
+
     def displayDialogNumberInParking(self, infromNumber: list, number: str) -> bool:
         if not infromNumber:
             return self.createDialogError(f'{number} нет в базе данных')
         if infromNumber[0][5] == 1:
             return self.createDialogError(f'{number} находиться в черном списке')
-        
+
         box = QMessageBox()
         box.setWindowTitle('Номер определился')
         box.setText(f'Пропустить номер {number}?')
-        box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        box.setStandardButtons(
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         openShlag = box.button(QMessageBox.StandardButton.Yes)
         openShlag.setText('Открыть шлагбаум')
         noOpenShlag = box.button(QMessageBox.StandardButton.No)
