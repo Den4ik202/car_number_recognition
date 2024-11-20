@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>762</width>
+    <height>498</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QTableWidget" name="allNumbers">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>1</y>
+     <width>751</width>
+     <height>491</height>
+    </rect>
+   </property>
+   <column>
+    <property name="text">
+     <string>Номер</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>ФИО</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Длительность</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Номер места</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>В черном ли списке</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Другая информация</string>
+    </property>
+   </column>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
