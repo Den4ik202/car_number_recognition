@@ -79,11 +79,10 @@ class SmartGuard:
         UPDATE carsNumbers
         SET number = '{allInf[0]}',
             FIO = '{allInf[1]}',
-            dateStart = '{allInf[2]}',
-            timeStopCar = {allInf[3]},
-            numberParkingSpaice = {allInf[4]},
-            blackList = {allInf[5]},
-            otherInformation = '{allInf[6]}'
+            timeStopCar = {allInf[2]},
+            numberParkingSpaice = {allInf[3]},
+            blackList = {allInf[4]},
+            otherInformation = '{allInf[5]}'
         WHERE number = '{allInf[0]}';""")
         self.con.commit()
 

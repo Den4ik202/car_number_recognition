@@ -97,7 +97,7 @@
  [],
  False,
  False,
- 1732091737,
+ 1732096513,
  [('run.exe',
    'c:\\Users\\Denis\\Desktop\\Python Projects\\Reconing Car '
    'Number\\venv\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
